@@ -1,0 +1,35 @@
+<!-- courses.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses</title>
+</head>
+<body>
+    <h1>Courses</h1>
+    <a href="/add_course">Add Course</a><br>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name of Course</th>
+            <th>Teacher ID</th>
+            <th>Type of Course</th>
+            <th>Actions</th>
+        </tr>
+        {% for course in data %}
+            <tr>
+                <td>{{ course[0] }}</td>
+                <td>{{ course[1] }}</td>
+                <td>{{ course[2] }}</td>
+                <td>{{ course[3] }}</td>
+                <td>
+                    <a href="/edit_course/{{ course[0] }}">Edit</a>
+                    <a href="/delete_course/{{ course[0] }}">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

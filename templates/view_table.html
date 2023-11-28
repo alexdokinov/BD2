@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ table_name }} Table</title>
+</head>
+<body>
+    <h1>{{ table_name }} Table</h1>
+    <table border="1">
+        <!-- Assuming all tables have the same structure with three columns -->
+        <tr>
+            <th>ID</th>
+            <th>Column 1</th>
+            <th>Column 2</th>
+        </tr>
+        {% for row in table_data %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><a href="/">Back to Choose a Table</a></p>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Course</title>
+</head>
+<body>
+    <h1>Edit Course</h1>
+    <form action="/edit_course/{{ course[0] }}" method="post">
+        <label for="name_of_course">Name of Course:</label>
+        <input type="text" name="name_of_course" value="{{ course[1] }}" required><br>
+        <label for="teacher_id">Teacher ID:</label>
+        <input type="number" name="teacher_id" value="{{ course[2] }}" required><br>
+        <label for="type_of_course">Type of Course:</label>
+        <input type="number" name="type_of_course" value="{{ course[3] }}" required><br>
+        <input type="submit" value="Update Course">
+    </form>
+</body>
+</html>

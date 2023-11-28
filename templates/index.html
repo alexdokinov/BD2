@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Table</title>
+</head>
+<body>
+    <h1>Choose a Table</h1>
+    <form action="/view_table" method="post">
+        <label for="table">Select a Table:</label>
+        <select name="table" id="table">
+            <option value="teachers">Teachers</option>
+            <option value="courses">Courses</option>
+            <option value="students">Students</option>
+            <option value="results">Results</option>
+        </select>
+        <input type="submit" value="View Table">
+    </form>
+</body>
+</html>
