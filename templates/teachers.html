@@ -1,15 +1,21 @@
-<!-- teachers.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teachers</title>
+    <title>Teachers Table</title>
 </head>
 <body>
-    <h1>Teachers</h1>
-    <a href="/add_teacher">Add Teacher</a><br>
+    <h1>Teachers Table</h1>
+    <p>Total Records: {{ statistics.total_records }}</p>
+    <p>Most Popular Names:</p>
+    <ul>
+        {% for name in statistics.popular_names %}
+            <li>{{ name[0] }}: {{ name[1] }} имен</li>
+        {% endfor %}
+    </ul>
+
     <table border="1">
         <tr>
             <th>ID</th>
@@ -24,7 +30,7 @@
                 <td>{{ teacher[2] }}</td>
                 <td>
                     <a href="/edit_teacher/{{ teacher[0] }}">Edit</a>
-                    <a href="/delete_teacher/{{ teacher[0] }}">Delete</a>
+                    <a href="/delete_teacher/{{ teacher[0] }}" onclick="return confirm('Are you sure?')">Delete</a>
                 </td>
             </tr>
         {% endfor %}

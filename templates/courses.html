@@ -1,15 +1,21 @@
-<!-- courses.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courses</title>
+    <title>Courses Table</title>
 </head>
 <body>
-    <h1>Courses</h1>
-    <a href="/add_course">Add Course</a><br>
+    <h1>Courses Table</h1>
+    <p>Total Records: {{ statistics.total_records }}</p>
+    <p>Most Popular Courses:</p>
+    <ul>
+        {% for course in statistics.popular_courses %}
+            <li>{{ course[0] }}: {{ course[1] }} шт.</li>
+        {% endfor %}
+    </ul>
+
     <table border="1">
         <tr>
             <th>ID</th>
@@ -26,7 +32,7 @@
                 <td>{{ course[3] }}</td>
                 <td>
                     <a href="/edit_course/{{ course[0] }}">Edit</a>
-                    <a href="/delete_course/{{ course[0] }}">Delete</a>
+                    <a href="/delete_course/{{ course[0] }}" onclick="return confirm('Are you sure?')">Delete</a>
                 </td>
             </tr>
         {% endfor %}

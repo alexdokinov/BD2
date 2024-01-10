@@ -1,15 +1,21 @@
-<!-- students.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students</title>
+    <title>Students Table</title>
 </head>
 <body>
-    <h1>Students</h1>
-    <a href="/add_student">Add Student</a><br>
+    <h1>Students Table</h1>
+    <p>Total Records: {{ statistics.total_records }}</p>
+    <p>Most Popular Cities:</p>
+    <ul>
+        {% for city in statistics.popular_cities %}
+            <li>{{ city[0] }}: {{ city[1] }} городов</li>
+        {% endfor %}
+    </ul>
+
     <table border="1">
         <tr>
             <th>ID</th>
@@ -28,7 +34,7 @@
                 <td>{{ student[4] }}</td>
                 <td>
                     <a href="/edit_student/{{ student[0] }}">Edit</a>
-                    <a href="/delete_student/{{ student[0] }}">Delete</a>
+                    <a href="/delete_student/{{ student[0] }}" onclick="return confirm('Are you sure?')">Delete</a>
                 </td>
             </tr>
         {% endfor %}

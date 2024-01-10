@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Table</title>
+</head>
+<body>
+    <h1>Mark Table</h1>
+    <p>Total Records: {{ statistics.total_records }}</p>
+    <p>Most Popular Marks:</p>
+    <ul>
+        {% for mark in statistics.popular_marks %}
+            <li>{{ mark[0] }}: {{ mark[1] }} студентов</li>
+        {% endfor %}
+    </ul>
+
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Student ID</th>
+            <th>Course ID</th>
+            <th>Mark</th>
+            <th>Actions</th>
+        </tr>
+        {% for mark in data %}
+            <tr>
+                <td>{{ mark[0] }}</td>
+                <td>{{ mark[1] }}</td>
+                <td>{{ mark[2] }}</td>
+                <td>{{ mark[3]|escape }}</td>
+                <td>
+                    <a href="/edit_mark/{{ mark[0] }}">Edit</a>
+                    <a href="/delete_mark/{{ mark[0] }}" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
