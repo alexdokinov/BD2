@@ -1,41 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courses Table</title>
+    <title>Courses</title>
 </head>
+
 <body>
-    <h1>Courses Table</h1>
-    <p>Total Records: {{ statistics.total_records }}</p>
-    <p>Most Popular Courses:</p>
-    <ul>
-        {% for course in statistics.popular_courses %}
-            <li>{{ course[0] }}: {{ course[1] }} шт.</li>
-        {% endfor %}
-    </ul>
+    <div>
+        <h2>Statistics</h2>
+        <p>Total Records: {{ statistics.total_records }}</p>
+        <p>Popular Course Names:</p>
+        <ul>
+            {% for course_name, count in statistics.popular_course_names %}
+            <li>{{ course_name }}: {{ count }} курсов</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <h1>Courses</h1>
+
+    <form action="/courses" method="get">
+        <label for="search">Search:</label>
+        <input type="text" id="search" name="search_term">
+        <button type="submit">Search</button>
+    </form>
 
     <table border="1">
         <tr>
-            <th>ID</th>
+            <th>Course ID</th>
             <th>Name of Course</th>
             <th>Teacher ID</th>
             <th>Type of Course</th>
-            <th>Actions</th>
         </tr>
         {% for course in data %}
-            <tr>
-                <td>{{ course[0] }}</td>
-                <td>{{ course[1] }}</td>
-                <td>{{ course[2] }}</td>
-                <td>{{ course[3] }}</td>
-                <td>
-                    <a href="/edit_course/{{ course[0] }}">Edit</a>
-                    <a href="/delete_course/{{ course[0] }}" onclick="return confirm('Are you sure?')">Delete</a>
-                </td>
-            </tr>
+        <tr>
+            <td>{{ course[0] }}</td>
+            <td>{{ course[1] }}</td>
+            <td>{{ course[2] }}</td>
+            <td>{{ course[3] }}</td>
+        </tr>
         {% endfor %}
     </table>
+
+    <div>
+        <p>Page {{ current_page }} of {{ total_pages }}</p>
+        {% if current_page > 1 %}
+            <a href="/courses?page={{ current_page - 1 }}{% if search_term %}&search_term={{ search_term }}{% endif %}">Previous</a>
+        {% endif %}
+        {% if current_page < total_pages %}
+            <a href="/courses?page={{ current_page + 1 }}{% if search_term %}&search_term={{ search_term }}{% endif %}">Next</a>
+        {% endif %}
+    </div>
 </body>
+
 </html>

@@ -7,22 +7,48 @@
     <title>Results</title>
 </head>
 <body>
+    <div>
+        <h2>Statistics</h2>
+        <p>Total Records: {{ statistics.total_records }}</p>
+
+        <h3>Type of Course Counts</h3>
+        <ul>
+            {% for type_of_course, count in statistics.type_of_course_counts.items() %}
+            <li>{{ type_of_course }}: {{ count }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
     <h1>Results</h1>
+    <form action="/results" method="get">
+        <label for="search">Search:</label>
+        <input type="text" id="search" name="search_term">
+        <button type="submit">Search</button>
+    </form>
     <table border="1">
         <tr>
-            <th>ID</th>
+            <th>Result ID</th>
             <th>Student ID</th>
             <th>Course ID</th>
             <th>Type of Course</th>
         </tr>
         {% for result in data %}
-            <tr>
-                <td>{{ result[0] }}</td>
-                <td>{{ result[1] }}</td>
-                <td>{{ result[2] }}</td>
-                <td>{{ result[3] }}</td>
-            </tr>
+        <tr>
+            <td>{{ result[0] }}</td>
+            <td>{{ result[1] }}</td>
+            <td>{{ result[2] }}</td>
+            <td>{{ result[3] }}</td>
+        </tr>
         {% endfor %}
     </table>
+    <div>
+        <p>Page {{ current_page }} of {{ total_pages }}</p>
+        {% if current_page > 1 %}
+            <a href="/results?page={{ current_page - 1 }}{% if search_term %}&search_term={{ search_term }}{% endif %}">Previous</a>
+        {% endif %}
+        {% if current_page < total_pages %}
+            <a href="/results?page={{ current_page + 1 }}{% if search_term %}&search_term={{ search_term }}{% endif %}">Next</a>
+        {% endif %}
+    </div>
 </body>
 </html>

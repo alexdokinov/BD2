@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, abort
 import sqlite3
 import random
+from collections import Counter
 
 app = Flask(__name__)
 
@@ -23,6 +24,12 @@ def query_db(query, args=(), one=False):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+def paginate_results(results, page, per_page):
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    return results[start_index:end_index]
 
 
 @app.route('/view_table', methods=['POST'])
@@ -54,25 +61,33 @@ def teachers():
     teachers_data = cursor.fetchall()
     connection.close()
 
+    search_term = request.args.get('search_term')
+    page = int(request.args.get('page', 1))
+    per_page = 30
+
+    if search_term:
+        search_terms = search_term.lower().split()
+        teachers_data = [teacher for teacher in teachers_data if
+                         all(term in f"{teacher[1].lower()} {teacher[2].lower()}" for term in search_terms)]
+
+    total_records = len(teachers_data)
+    total_pages = (total_records + per_page - 1) // per_page
+
+    if page < 1 or page > total_pages:
+        abort(404)
+
+    teachers_data_paginated = paginate_results(teachers_data, page, per_page)
+
     teachers_statistics = get_teachers_statistics()
 
-    return render_template('teachers.html', data=teachers_data, statistics=teachers_statistics)
+    return render_template('teachers.html', data=teachers_data_paginated, statistics=teachers_statistics,
+                           search_term=search_term, current_page=page, total_pages=total_pages)
 
 
-def get_courses_statistics():
-    connection = connect_db()
-    cursor = connection.cursor()
-
-    cursor.execute('SELECT COUNT(*) FROM Courses')
-    total_records = cursor.fetchone()[0]
-
-    cursor.execute(
-        'SELECT name_of_course, COUNT(*) as count FROM Courses GROUP BY name_of_course ORDER BY count DESC LIMIT 5')
-    popular_courses = cursor.fetchall()
-
-    connection.close()
-
-    return {'total_records': total_records, 'popular_courses': popular_courses}
+def get_courses_statistics(courses_data):
+    total_records = len(courses_data)
+    popular_course_names = Counter(course[1] for course in courses_data).most_common(5)
+    return {'total_records': total_records, 'popular_course_names': popular_course_names}
 
 
 @app.route('/courses')
@@ -83,24 +98,37 @@ def courses():
     courses_data = cursor.fetchall()
     connection.close()
 
-    courses_statistics = get_courses_statistics()
+    search_term = request.args.get('search_term')
+    page = int(request.args.get('page', 1))
+    per_page = 30
 
-    return render_template('courses.html', data=courses_data, statistics=courses_statistics)
+    if search_term:
+        search_terms = search_term.lower().split()
+        courses_data = [course for course in courses_data if
+                        any(term in course[1].lower() for term in search_terms)]
+
+    total_records = len(courses_data)
+    total_pages = (total_records + per_page - 1) // per_page
+
+    if page < 1 or page > total_pages:
+        abort(404)
+
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    courses_data_paginated = courses_data[start_index:end_index]
+
+    courses_statistics = get_courses_statistics(courses_data)
+
+    return render_template('courses.html', data=courses_data_paginated, statistics=courses_statistics,
+                           search_term=search_term, current_page=page, total_pages=total_pages)
 
 
-def get_students_statistics():
-    connection = connect_db()
-    cursor = connection.cursor()
+def get_students_statistics(students_data):
+    total_records = len(students_data)
 
-    cursor.execute('SELECT COUNT(*) FROM Students')
-    total_records = cursor.fetchone()[0]
+    popular_names = Counter(student[1] for student in students_data).most_common(5)
 
-    cursor.execute('SELECT city, COUNT(*) as count FROM Students GROUP BY city ORDER BY count DESC LIMIT 5')
-    popular_cities = cursor.fetchall()
-
-    connection.close()
-
-    return {'total_records': total_records, 'popular_cities': popular_cities}
+    return {'total_records': total_records, 'popular_names': popular_names}
 
 
 @app.route('/students')
@@ -111,9 +139,37 @@ def students():
     students_data = cursor.fetchall()
     connection.close()
 
-    students_statistics = get_students_statistics()
+    search_term = request.args.get('search_term')
+    page = int(request.args.get('page', 1))
+    per_page = 30
 
-    return render_template('students.html', data=students_data, statistics=students_statistics)
+    if search_term:
+        search_terms = search_term.lower().split()
+        students_data = [student for student in students_data if
+                         all(term in f"{student[1].lower()} {student[2].lower()}" for term in search_terms)]
+
+    total_records = len(students_data)
+    total_pages = (total_records + per_page - 1) // per_page
+
+    if page < 1 or page > total_pages:
+        abort(404)
+
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    students_data_paginated = students_data[start_index:end_index]
+
+    students_statistics = get_students_statistics(students_data)
+
+    return render_template('students.html', data=students_data_paginated, statistics=students_statistics,
+                           search_term=search_term, current_page=page, total_pages=total_pages)
+
+
+def get_results_statistics(results_data):
+    total_records = len(results_data)
+
+    type_of_course_counts = Counter(result[3] for result in results_data)
+
+    return {'total_records': total_records, 'type_of_course_counts': type_of_course_counts}
 
 
 @app.route('/results')
@@ -124,24 +180,38 @@ def results():
     results_data = cursor.fetchall()
     connection.close()
 
-    print(results_data)
+    search_term = request.args.get('search_term')
+    page = int(request.args.get('page', 1))
+    per_page = 30
 
-    return render_template('results.html', data=results_data)
+    if search_term:
+        search_terms = search_term.lower().split()
+        results_data = [result for result in results_data if
+                        any(term in str(result) for term in search_terms)]
+
+    total_records = len(results_data)
+    total_pages = (total_records + per_page - 1) // per_page
+
+    if page < 1 or page > total_pages:
+        abort(404)
+
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    results_data_paginated = results_data[start_index:end_index]
+
+    results_statistics = get_results_statistics(results_data)
+
+    return render_template('results.html', data=results_data_paginated, statistics=results_statistics,
+                           search_term=search_term, current_page=page, total_pages=total_pages)
 
 
-def get_mark_statistics():
-    connection = connect_db()
-    cursor = connection.cursor()
 
-    cursor.execute('SELECT COUNT(*) FROM Mark')
-    total_records = cursor.fetchone()[0]
+def get_mark_statistics(mark_data):
+    total_records = len(mark_data)
 
-    cursor.execute('SELECT mark, COUNT(*) as count FROM Mark GROUP BY mark ORDER BY count DESC LIMIT 5')
-    popular_marks = cursor.fetchall()
+    mark_counts = Counter(mark[3] for mark in mark_data)
 
-    connection.close()
-
-    return {'total_records': total_records, 'popular_marks': popular_marks}
+    return {'total_records': total_records, 'mark_counts': mark_counts}
 
 
 @app.route('/mark')
@@ -152,9 +222,29 @@ def mark():
     mark_data = cursor.fetchall()
     connection.close()
 
-    mark_statistics = get_mark_statistics()
+    search_term = request.args.get('search_term')
+    page = int(request.args.get('page', 1))
+    per_page = 30
 
-    return render_template('mark.html', data=mark_data, statistics=mark_statistics)
+    if search_term:
+        search_terms = search_term.lower().split()
+        mark_data = [mark for mark in mark_data if
+                     any(term in str(mark) for term in search_terms)]
+
+    total_records = len(mark_data)
+    total_pages = (total_records + per_page - 1) // per_page
+
+    if page < 1 or page > total_pages:
+        abort(404)
+
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    mark_data_paginated = mark_data[start_index:end_index]
+
+    mark_statistics = get_mark_statistics(mark_data)
+
+    return render_template('mark.html', data=mark_data_paginated, statistics=mark_statistics,
+                           search_term=search_term, current_page=page, total_pages=total_pages)
 
 
 @app.route('/add_teacher', methods=['GET', 'POST'])

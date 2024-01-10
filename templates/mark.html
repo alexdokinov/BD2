@@ -1,41 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mark Table</title>
+    <title>Mark</title>
 </head>
+
 <body>
-    <h1>Mark Table</h1>
-    <p>Total Records: {{ statistics.total_records }}</p>
-    <p>Most Popular Marks:</p>
-    <ul>
-        {% for mark in statistics.popular_marks %}
-            <li>{{ mark[0] }}: {{ mark[1] }} студентов</li>
-        {% endfor %}
-    </ul>
+    <div>
+        <h2>Statistics</h2>
+        <p>Total Records: {{ statistics.total_records }}</p>
+
+        <h3>Mark Counts</h3>
+        <ul>
+            {% for mark, count in statistics.mark_counts.items() %}
+            <li>{{ mark }}: {{ count }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <h1>Mark</h1>
+    <form action="/mark" method="get">
+        <label for="search">Search:</label>
+        <input type="text" id="search" name="search_term">
+        <button type="submit">Search</button>
+    </form>
 
     <table border="1">
         <tr>
-            <th>ID</th>
+            <th>Mark ID</th>
             <th>Student ID</th>
             <th>Course ID</th>
             <th>Mark</th>
-            <th>Actions</th>
         </tr>
         {% for mark in data %}
-            <tr>
-                <td>{{ mark[0] }}</td>
-                <td>{{ mark[1] }}</td>
-                <td>{{ mark[2] }}</td>
-                <td>{{ mark[3]|escape }}</td>
-                <td>
-                    <a href="/edit_mark/{{ mark[0] }}">Edit</a>
-                    <a href="/delete_mark/{{ mark[0] }}" onclick="return confirm('Are you sure?')">Delete</a>
-                </td>
-            </tr>
+        <tr>
+            <td>{{ mark[0] }}</td>
+            <td>{{ mark[1] }}</td>
+            <td>{{ mark[2] }}</td>
+            <td>{{ mark[3] }}</td>
+        </tr>
         {% endfor %}
     </table>
+    <div>
+        <p>Page {{ current_page }} of {{ total_pages }}</p>
+        {% if current_page > 1 %}
+            <a href="/mark?page={{ current_page - 1 }}{% if search_term %}&search_term={{ search_term }}{% endif %}">Previous</a>
+        {% endif %}
+        {% if current_page < total_pages %}
+            <a href="/mark?page={{ current_page + 1 }}{% if search_term %}&search_term={{ search_term }}{% endif %}">Next</a>
+        {% endif %}
+    </div>
 </body>
+
 </html>

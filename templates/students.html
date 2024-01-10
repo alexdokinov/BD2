@@ -1,43 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students Table</title>
+    <title>Students</title>
 </head>
+
 <body>
-    <h1>Students Table</h1>
-    <p>Total Records: {{ statistics.total_records }}</p>
-    <p>Most Popular Cities:</p>
-    <ul>
-        {% for city in statistics.popular_cities %}
-            <li>{{ city[0] }}: {{ city[1] }} городов</li>
-        {% endfor %}
-    </ul>
+    <div>
+        <h2>Statistics</h2>
+        <p>Total Records: {{ statistics.total_records }}</p>
+        <h3>Popular Names</h3>
+        <ul>
+            {% for name, count in statistics.popular_names %}
+            <li>{{ name }}: {{ count }} имен</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <h1>Students</h1>
+
+    <form action="/students" method="get">
+        <label for="search_term">Search:</label>
+        <input type="text" id="search_term" name="search_term" value="{{ search_term }}">
+        <button type="submit">Search</button>
+    </form>
+
 
     <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Birthdate</th>
-            <th>City</th>
-            <th>Actions</th>
-        </tr>
-        {% for student in data %}
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Birthdate</th>
+                <th>City</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in data %}
             <tr>
                 <td>{{ student[0] }}</td>
                 <td>{{ student[1] }}</td>
                 <td>{{ student[2] }}</td>
                 <td>{{ student[3] }}</td>
                 <td>{{ student[4] }}</td>
-                <td>
-                    <a href="/edit_student/{{ student[0] }}">Edit</a>
-                    <a href="/delete_student/{{ student[0] }}" onclick="return confirm('Are you sure?')">Delete</a>
-                </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
+        </tbody>
     </table>
+
+    <div>
+    <p>Page {{ current_page }} of {{ total_pages }}</p>
+    {% if current_page > 1 %}
+        <a href="/students?page={{ current_page - 1 }}{% if search_term %}&search_term={{ search_term }}{% endif %}">Previous</a>
+    {% endif %}
+    {% if current_page < total_pages %}
+        <a href="/students?page={{ current_page + 1 }}{% if search_term %}&search_term={{ search_term }}{% endif %}">Next</a>
+    {% endif %}
+</div>
+
 </body>
+
 </html>
